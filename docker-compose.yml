@@ -1,0 +1,9 @@
+services:
+  whatsapp-api:
+    build: .
+    ports:
+      - "3002:3000"
+    volumes:
+      - ./auth:/app/auth
+    restart: always
+
