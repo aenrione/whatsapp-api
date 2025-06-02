@@ -1,10 +1,14 @@
 import express, { Request, Response } from 'express'
 import { sendMessage, startWhatsAppClient } from './whatsapp'
+import './store/sqliteStore'
+
+import chatRoutes from './chats'
 
 const app = express()
 const PORT = process.env.PORT || 3000
 
 app.use(express.json())
+app.use('/api', chatRoutes)
 
 app.post('/send', async (req: Request, res: Response): Promise<any> => {
   const { number, message } = req.body
