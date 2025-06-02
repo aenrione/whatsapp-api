@@ -1,16 +1,14 @@
 {
   "sonarr": {
-    "Grab": "📥 *Series Grabbed*\nSeries: {series_title}\nSeason: {season_number}\nEpisode(s): {episode_numbers}\nTitle: {episode_title}",
-    "SeriesAdd": "📥 *Series Added*\nSeries: {series_title}\nSeason: {season_number}\nEpisode(s): {episode_numbers}\nTitle: {episode_title}",
+    "Grab": "📥 *Series Grabbed*\nSeries: {series_title}\nSeason: {season_number}\nEpisode(s): {episode_numbers}\n{imdb_link}",
     "SeriesDelete": "📥 *Series Deleted*\nSeries: {series_title}\n",
-    "Download": "📥 *Series Downloaded*\nSeries: {series_title}\nSeason: {season_number}\nEpisode(s): {episode_numbers}\nTitle: {episode_title}",
-    "Rename": "🔁 *Series Renamed*\nSeries: {series_title}\nSeason: {season_number}\nEpisode(s): {episode_numbers}\nTitle: {episode_title}: {file_path}",
+    "Download": "📥 *Series Downloaded*\nSeries: {series_title}\nSeason: {season_number}\nEpisode(s): {episode_numbers}\n{imdb_link}",
+    "Rename": "🔁 *Series Renamed*\nSeries: {series_title}\nSeason: {season_number}\nEpisode(s): {episode_numbers}\n",
     "Test": "✏️ *Test*: This is a test message from Sonarr"
   },
   "radarr": {
-    "Grab": "📥 *Movie Grabbed*\nTitle: {movie_title} ({movie_year})",
-    "MovieAdd": "📥 *Movie Added*\nTitle: {movie_title} ({movie_year})",
-    "Download": "📥 *Movie Downloaded*\nTitle: {movie_title} ({movie_year})",
+    "Grab": "📥 *Movie Grabbed*\nTitle: {movie_title} ({movie_year})\n{imdb_link}",
+    "Download": "📥 *Movie Downloaded*\nTitle: {movie_title} ({movie_year})\n{imdb_link}",
     "Rename": "✏️ *Movie Renamed*\nTitle: {movie_title} ({movie_year})",
     "Test": "✏️ *Test*: This is a test message from Radarr"
   }

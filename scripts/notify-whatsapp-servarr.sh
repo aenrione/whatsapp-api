@@ -26,14 +26,15 @@ if [ -n "$sonarr_eventtype" ]; then
   EVENT_TYPE="$sonarr_eventtype"
   APP="sonarr"
   SERIES_TITLE="$sonarr_series_title"
-  SEASON_NUMBER="$sonarr_episodefile_seasonnumber"
-  EPISODE_NUMBERS="$sonarr_episodefile_episodenumbers"
-  EPISODE_TITLE="$sonarr_episodefile_episodetitles"
+  SEASON_NUMBER="$sonarr_release_seasonnumber"
+  EPISODE_NUMBERS="$sonarr_release_absoluteepisodenumbers"
+  IMDB_ID="$sonarr_series_imdbid"
 elif [ -n "$radarr_eventtype" ]; then
   EVENT_TYPE="$radarr_eventtype"
   APP="radarr"
   MOVIE_TITLE="$radarr_movie_title"
   MOVIE_YEAR="$radarr_movie_year"
+  IMDB_ID="$radarr_movie_imdbid"
 else
   echo "No event type detected. Exiting."
   exit 1
@@ -54,21 +55,44 @@ if [ "$TEMPLATE" == "null" ]; then
   exit 1
 fi
 
-# Replace placeholders with actual values
+# if imdb_id is set, append url
+if [ -n "$IMDB_ID" ]; then
+  url="https://www.imdb.com/title/$IMDB_ID"
+else
+  url=""
+fi
+
+# Helper to escape strings safely for JSON
+json_escape() {
+  printf '%s' "$1" | jq -Rs .
+}
+
 if [ "$APP" == "sonarr" ]; then
-  MESSAGE=$(echo "$TEMPLATE" | sed \
-    -e "s/{series_title}/$SERIES_TITLE/g" \
-    -e "s/{season_number}/$SEASON_NUMBER/g" \
-    -e "s/{episode_numbers}/$EPISODE_NUMBERS/g" \
-    -e "s/{episode_title}/$EPISODE_TITLE/g")
+  MESSAGE=$(jq -n --arg template "$TEMPLATE" \
+                   --arg series_title "$(json_escape "$SERIES_TITLE")" \
+                   --arg season_number "$(json_escape "$SEASON_NUMBER")" \
+                   --arg episode_numbers "$(json_escape "$EPISODE_NUMBERS")" \
+                   --arg imdb_link "$url" \
+      '$template
+        | gsub("\\{series_title\\}"; $series_title)
+        | gsub("\\{season_number\\}"; $season_number)
+        | gsub("\\{episode_numbers\\}"; $episode_numbers)
+        | gsub("\\{imdb_link\\}"; $imdb_link)
+      ')
 elif [ "$APP" == "radarr" ]; then
-  MESSAGE=$(echo "$TEMPLATE" | sed \
-    -e "s/{movie_title}/$MOVIE_TITLE/g" \
-    -e "s/{movie_year}/$MOVIE_YEAR/g" )
+  MESSAGE=$(jq -n --arg template "$TEMPLATE" \
+                   --arg movie_title "$(json_escape "$MOVIE_TITLE")" \
+                   --arg movie_year "$MOVIE_YEAR" \
+                   --arg imdb_link "$url" \
+      '$template
+        | gsub("\\{movie_title\\}"; $movie_title)
+        | gsub("\\{movie_year\\}"; $movie_year)
+        | gsub("\\{imdb_link\\}"; $imdb_link)
+      ')
 fi
 
 # Send the message via WhatsApp API
 curl -s -X POST "$API_URL/send" \
   -H "Content-Type: application/json" \
-  -d "{\"number\": \"$JID\", \"message\": \"$MESSAGE\"}"
+  -d "{\"number\": \"$JID\", \"message\": $MESSAGE}"
 
